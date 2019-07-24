@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "55462159240",
+    "firebase_url": "https://texascasinothai.firebaseio.com",
+    "project_id": "texascasinothai",
+    "storage_bucket": "texascasinothai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55462159240:android:50a36608bcc1a0d6",
+        "android_client_info": {
+          "package_name": "com.texascasino.thai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55462159240-muu06rh3dfli5a93e62s5me6hegchbih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwqCCXI-32c8D7o7sImgrOLj3U-M7NbOY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
