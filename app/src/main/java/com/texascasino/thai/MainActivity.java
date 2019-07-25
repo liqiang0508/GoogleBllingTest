@@ -26,10 +26,11 @@ import java.util.Iterator;
 import java.util.List;
 
 //import com.android.billingclient.api.BillingClient.BillingResponse;
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
 
     public String TAG = "MainActivity";
     public static MainActivity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +39,41 @@ public class MainActivity extends Activity  {
 
 
         Google.InitSDk(activity);
+        Google.setGoogleState(new Google.GoogleState() {
+
+            @Override
+            public void onBillingServiceDisconnected() {
+                Log.e(TAG, "onBillingServiceDisconnected---");
+            }
+
+            @Override
+            public void onBillingServiceConnected() {
+                Log.e(TAG, "onBillingServiceConnected---");
+
+            }
+
+            @Override
+            public void onQuerySkuDetailsDone() {
+                Log.e(TAG, "onQuerySkuDetailsDone---");
+                TextView text = (TextView) findViewById(R.id.GoodsInfos);
+                JSONObject obj = Google.GetGoodInfo();
+                Iterator<String> it = obj.keys();
+                String s = "";
+                try {
+                    while (it.hasNext()) {
+// 获得key
+                        String key = it.next();
+                        String value = obj.getString(key);
+                        s = s + key + ":" + value + "\n";
+                    }
+                } catch (JSONException e) {
+                    Log.i(TAG, "error---getString");
+                }
+
+                Log.i(TAG, "setText--------" + s);
+                text.setText(s);
+            }
+        });
 
         Button bt = (Button) findViewById(R.id.buy1);
         bt.setOnClickListener(new View.OnClickListener() {
@@ -97,14 +133,13 @@ public class MainActivity extends Activity  {
 // 获得key
                         String key = it.next();
                         String value = obj.getString(key);
-                        s = s+ key+":"+value+"\n";
+                        s = s + key + ":" + value + "\n";
                     }
-                } catch (JSONException e)
-                {
-                    Log.i(TAG,"error---getString");
+                } catch (JSONException e) {
+                    Log.i(TAG, "error---getString");
                 }
 
-                Log.i(TAG,"setText--------"+s);
+                Log.i(TAG, "setText--------" + s);
                 text.setText(s);
             }
         });
