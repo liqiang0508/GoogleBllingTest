@@ -29,19 +29,13 @@ public class Google {
 
     public  interface GoogleState{
           void onBillingServiceDisconnected();
-          void onBillingServiceConnected();
+          void onBillingSetupFinished();
+          void onBillingSetupError(int code);
           void onQuerySkuDetailsDone();
 
     }
     static final String SKU_PREFIX = MainActivity.activity.getPackageName() + ".gempack";
     static GoogleState f_call;
-    static final String SKU_PACK1 = SKU_PREFIX + "1";
-    static final String SKU_PACK2 = SKU_PREFIX + "2";
-    static final String SKU_PACK3 = SKU_PREFIX + "3";
-    static final String SKU_PACK4 = SKU_PREFIX + "4";
-    static final String SKU_PACK5 = SKU_PREFIX + "5";
-    static final String SKU_PACK6 = SKU_PREFIX + "6";
-    static final String SKU_PACK7 = SKU_PREFIX + "7";
 
     static int IapCount = 7;
     static String payOriginalJson;
@@ -112,7 +106,7 @@ public class Google {
         if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
             payOriginalJson = purchase.getOriginalJson();
             paygetSignature = purchase.getSignature();
-            Log.e(TAG, "handlePurchase:-- " + payOriginalJson + "\n" + paygetSignature + "\n" + purchase.getPurchaseToken());
+            Log.e(TAG, "handlePurchase:-- " + payOriginalJson + "\n" + paygetSignature + "\n");
             ConsumeParams consumeParams = ConsumeParams.newBuilder()
                     .setPurchaseToken(purchase.getPurchaseToken())
                     .setDeveloperPayload(purchase.getDeveloperPayload())
@@ -215,9 +209,10 @@ public class Google {
                     params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
                     mBillingClient.querySkuDetailsAsync(params.build(), skuDetailsResponseListener);
                     PlayServiceState = true;
-                    f_call.onBillingServiceConnected();
+                    f_call.onBillingSetupFinished();
                 } else {
-                    Log.e(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
+//                    Log.e(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
+                    f_call.onBillingSetupError(billingResult.getResponseCode());
                 }
 
             }
@@ -226,7 +221,7 @@ public class Google {
             public void onBillingServiceDisconnected() {
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
-                Log.e(TAG, "onBillingServiceDisconnected");
+//                Log.e(TAG, "onBillingServiceDisconnected");
                 PlayServiceState = false;
 //                InitSDk(MainActivity.activity);//断开连接在连一次
                 f_call.onBillingServiceDisconnected();

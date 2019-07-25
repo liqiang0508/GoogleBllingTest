@@ -47,9 +47,13 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onBillingServiceConnected() {
-                Log.e(TAG, "onBillingServiceConnected---");
+            public void onBillingSetupFinished() {
+                Log.e(TAG, "onBillingSetupFinished---");
+            }
 
+            @Override
+            public void onBillingSetupError(int code) {
+                Log.e(TAG, "onBillingSetupError---"+code);
             }
 
             @Override
@@ -61,7 +65,6 @@ public class MainActivity extends Activity {
                 String s = "";
                 try {
                     while (it.hasNext()) {
-// 获得key
                         String key = it.next();
                         String value = obj.getString(key);
                         s = s + key + ":" + value + "\n";
@@ -121,6 +124,7 @@ public class MainActivity extends Activity {
         });
 
         Button getInfo = (Button) findViewById(R.id.getInfo);
+        getInfo.setVisibility(View.INVISIBLE);
         getInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
