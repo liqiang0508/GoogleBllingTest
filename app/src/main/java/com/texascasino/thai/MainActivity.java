@@ -19,6 +19,10 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 
 //import static com.android.billingclient.api.BillingClient.BillingResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Iterator;
 import java.util.List;
 
 //import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -39,8 +43,69 @@ public class MainActivity extends Activity  {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick: 11");
+//                Log.i(TAG, "onClick: 11");
                 Google.Pay("com.texascasino.thai.gempack1");
+            }
+        });
+
+        Button bt2 = (Button) findViewById(R.id.buy2);
+        bt2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, "onClick: 11");
+                Google.Pay("com.texascasino.thai.gempack2");
+            }
+        });
+
+        Button bt3 = (Button) findViewById(R.id.buy3);
+        bt3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, "onClick: 11");
+                Google.Pay("com.texascasino.thai.gempack3");
+            }
+        });
+
+        Button bt4 = (Button) findViewById(R.id.buy4);
+        bt4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, "onClick: 11");
+                Google.Pay("com.texascasino.thai.gempack4");
+            }
+        });
+
+        Button bt5 = (Button) findViewById(R.id.buy5);
+        bt5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, "onClick: 11");
+                Google.Pay("com.texascasino.thai.gempack5");
+            }
+        });
+
+        Button getInfo = (Button) findViewById(R.id.getInfo);
+        getInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView text = (TextView) findViewById(R.id.GoodsInfos);
+                JSONObject obj = Google.GetGoodInfo();
+                Iterator<String> it = obj.keys();
+                String s = "";
+                try {
+                    while (it.hasNext()) {
+// 获得key
+                        String key = it.next();
+                        String value = obj.getString(key);
+                        s = s+ key+":"+value+"\n";
+                    }
+                } catch (JSONException e)
+                {
+                    Log.i(TAG,"error---getString");
+                }
+
+                Log.i(TAG,"setText--------"+s);
+                text.setText(s);
             }
         });
 

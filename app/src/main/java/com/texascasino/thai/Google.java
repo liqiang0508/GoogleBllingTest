@@ -47,16 +47,18 @@ public class Google {
     static PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
         @Override
         public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> purchases) {
-            Log.i(TAG, "onPurchasesUpdated--------" + billingResult.getResponseCode());
+
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null)//success
             {
+
                 for (Purchase purchase : purchases) {
                     handlePurchase(purchase);
+                    Log.e(TAG, "onPurchasesUpdated--------OK----" + billingResult.getResponseCode()+"---"+purchase.getSku());
                 }
                 Toast.makeText(MainActivity.activity, "buy success", Toast.LENGTH_LONG).show();
             } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED)//user canceled
             {
-
+                Log.e(TAG, "onPurchasesUpdated--------USER_CANCELED---" + billingResult.getResponseCode());
             } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED)//ITEM_ALREADY_OWNED
             {
                 for (Purchase purchase : purchases) {
@@ -87,12 +89,12 @@ public class Google {
     static SkuDetailsResponseListener skuDetailsResponseListener = new SkuDetailsResponseListener() {
         @Override
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
-            Log.i(TAG, "onSkuDetailsResponse");
+            Log.e(TAG, "onSkuDetailsResponse");
             for (SkuDetails skuDetails : skuDetailsList) {
                 String sku = skuDetails.getSku();
                 String price = skuDetails.getPrice();
-                Log.i("Google sku", sku);
-                Log.i("Google price", price);
+                Log.e("Google sku", sku);
+                Log.e("Google price", price);
                 skuDetailList.add(skuDetails);
             }
 
@@ -105,9 +107,9 @@ public class Google {
         @Override
         public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                Log.i(TAG, "onConsumeResponse: success--" + purchaseToken);
+                Log.e(TAG, "onConsumeResponse: success--" + purchaseToken);
             } else {
-                Log.i(TAG, "onConsumeResponse: error---" + billingResult.getResponseCode() + "  " + purchaseToken);
+                Log.e(TAG, "onConsumeResponse: error---" + billingResult.getResponseCode() + "  " + purchaseToken);
             }
         }
     };
@@ -121,7 +123,7 @@ public class Google {
             try {
                 jsonObject.put(sku, price);
             } catch (JSONException e) {
-                Log.i(TAG, "GetGoodInfo  error");
+                Log.e(TAG, "GetGoodInfo  error");
             }
 
 
@@ -158,7 +160,7 @@ public class Google {
 
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
-                    Log.i(TAG, "onBillingSetupFinished");
+                    Log.e(TAG, "onBillingSetupFinished  OK");
                     List<String> skuList = new ArrayList<>();
                     skuList.add(SKU_PACK1);
                     skuList.add(SKU_PACK2);
@@ -174,7 +176,7 @@ public class Google {
                 }
                 else
                 {
-                    Log.i(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
+                    Log.e(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
                 }
 
             }
@@ -183,8 +185,9 @@ public class Google {
             public void onBillingServiceDisconnected() {
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
-                Log.i(TAG, "onBillingServiceDisconnected");
+                Log.e(TAG, "onBillingServiceDisconnected");
                 PlayServiceState = false;
+                InitSDk(MainActivity.activity);//断开连接在连一次
             }
         });
     }
