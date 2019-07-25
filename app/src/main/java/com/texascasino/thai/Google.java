@@ -66,7 +66,8 @@ public class Google {
                 }
             } else//fail
             {
-                Toast.makeText(MainActivity.activity, "buy fail" + billingResult.getResponseCode(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "onPurchasesUpdated error-----" + billingResult.getResponseCode());
+//                Toast.makeText(MainActivity.activity, "onPurchasesUpdated fail-" + billingResult.getResponseCode(), Toast.LENGTH_LONG).show();
             }
         }
     };
