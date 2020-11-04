@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.texascasino.thai.gempack1");
+                Google.Pay("com.thaigame.poker.gempack1");
             }
         });
 
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.texascasino.thai.gempack2");
+                Google.Pay("com.thaigame.poker.gempack2");
             }
         });
 
@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.texascasino.thai.gempack3");
+                Google.Pay("com.thaigame.poker.gempack3");
             }
         });
 
@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.texascasino.thai.gempack4");
+                Google.Pay("com.thaigame.poker.gempack4");
             }
         });
 
@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.texascasino.thai.gempack5");
+                Google.Pay("com.thaigame.poker.gempack5");
             }
         });
 

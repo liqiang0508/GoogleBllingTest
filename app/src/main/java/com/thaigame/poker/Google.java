@@ -165,7 +165,7 @@ public class Google {
     //buy
     static void Pay(String productId) {
         if (PlayServiceState == false) {//断开了连接
-            Log.e(TAG, "onBillingServiceDisconnected  can not Pay" + productId);
+            Log.e(TAG, "onBillingServiceDisconnected  can not Pay==" + productId);
             return;
         }
         SkuDetails skuDetails = null;
