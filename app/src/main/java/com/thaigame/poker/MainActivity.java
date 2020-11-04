@@ -1,29 +1,24 @@
-package com.texascasino.thai;
+package com.thaigame.poker;
 
 import android.app.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingClient.BillingResponseCode;
-import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
-
 //import static com.android.billingclient.api.BillingClient.BillingResponse;
+
+import com.thaigame.poker.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.List;
 
 //import com.android.billingclient.api.BillingClient.BillingResponse;
 public class MainActivity extends Activity {
@@ -34,11 +29,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         activity = this;
 
 
-        Google.InitSDk(activity);
+
         Google.setGoogleState(new Google.GoogleState() {
 
             @Override
@@ -77,6 +73,7 @@ public class MainActivity extends Activity {
                 text.setText(s);
             }
         });
+        Google.InitSDk(activity);
 
         Button bt = (Button) findViewById(R.id.buy1);
         bt.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +142,17 @@ public class MainActivity extends Activity {
 
                 Log.i(TAG, "setText--------" + s);
                 text.setText(s);
+            }
+        });
+
+        Button tosecond = (Button) findViewById(R.id.tosecond);
+        tosecond.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "onClick:tosecond ");
+                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 

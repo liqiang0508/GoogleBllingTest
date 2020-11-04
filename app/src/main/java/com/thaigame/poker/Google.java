@@ -1,9 +1,8 @@
-package com.texascasino.thai;
+package com.thaigame.poker;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -40,7 +39,7 @@ public class Google {
     static int IapCount = 7;
     static String payOriginalJson;
     static String paygetSignature;
-    static String base64PublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgSSLc483z2WOBlsTQADvgeEAQQXRf0kvPXgtdAlIj0bEVc57obaReqg6NLhIRg5YDwB70PGSCnYq/XTHsywr22+qC+QgKZ7G8M0yngNBPNthAbQTPaEsn8tBj32n/bjuVSz6CbLJLdP5Gcy/UZeyF7oITiUTzMBMwAKXvdMaArVcWARi74vNAiOPp0AdweBZP1yqFjDbk0HTOX4iDSyX6CSvGWcwf2fcvwcBm0OAPYgEEUuBtgx+wq/Hqy1okHjQJHwok1RxqaE87m76hAP0EvmeCYDb7Lu4agisVqvQ084fG6HNOUybTJh2eNs04moBR1snbWXpLrYUlTmy6xtjvwIDAQAB";
+    static String base64PublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAowzbGJf2Y9Q32fO/TgNvbC9SRmfYMunEirkUGpifg5NpfxkCURYS9emYaDlvcb22JiRZZPs+8so1apnE4f3kDGNNts9szJGA7amatvD+gW7/MSaTsieK9eBV53Xn32sSdG+fxgZKJhTuSf8GqWi06IMQurmO24RKkBROZwJfrMarZ8vZCyKX7LJJR7nhyDMvvQsFWszTn+g5FTLxXHu0eNw8OWABRaHZy+ICdDxu74MxA1jrGisqLAeAP2iKD0jsQUdATBlE9O/yCyHvAx/mvSe5VbTqDZ0z9GpFDejUYM2w3tbZy6Pkq+ocAoky842q4OORGTL9+hw6zSIRRlXdzQIDAQAB";
 
     static private String TAG = "Google";
     static List<SkuDetails> skuDetailList = new ArrayList<SkuDetails>();//商品信息
@@ -103,17 +102,17 @@ public class Google {
 
     //消耗商品
     static void handlePurchase(Purchase purchase) {
-        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+//        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
             payOriginalJson = purchase.getOriginalJson();
             paygetSignature = purchase.getSignature();
             Log.e(TAG, "handlePurchase:-- " + payOriginalJson + "\n" + paygetSignature + "\n");
             ConsumeParams consumeParams = ConsumeParams.newBuilder()
                     .setPurchaseToken(purchase.getPurchaseToken())
-                    .setDeveloperPayload(purchase.getDeveloperPayload())
+//                    .setDeveloperPayload(purchase.getDeveloperPayload())//弃用
                     .build();
 
             mBillingClient.consumeAsync(consumeParams, consumeResponseListener);
-        }
+//        }
     }
 
     // 查询回调
