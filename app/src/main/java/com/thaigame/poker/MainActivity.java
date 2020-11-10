@@ -13,12 +13,14 @@ import android.widget.TextView;
 
 //import static com.android.billingclient.api.BillingClient.BillingResponse;
 
+import com.android.billingclient.api.SkuDetails;
 import com.thaigame.poker.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.List;
 
 //import com.android.billingclient.api.BillingClient.BillingResponse;
 public class MainActivity extends Activity {
@@ -56,20 +58,30 @@ public class MainActivity extends Activity {
             public void onQuerySkuDetailsDone() {
                 Log.e(TAG, "onQuerySkuDetailsDone---");
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
-                JSONObject obj = Google.GetGoodInfo();
-                Iterator<String> it = obj.keys();
+//                JSONObject obj = Google.GetGoodInfo();
+//                Log.e(TAG, obj.toString());
+//                Iterator<String> it = obj.keys();
+//                String s = "";
+//                try {
+//                    while (it.hasNext()) {
+//                        String key = it.next();
+//                        String value = obj.getString(key);
+//                        s = s + key + ":" + value + "\n";
+//                    }
+//                } catch (JSONException e) {
+//                    Log.i(TAG, "error---getString");
+//                }
+//
+//                Log.i(TAG, "setText--------" + s);
                 String s = "";
-                try {
-                    while (it.hasNext()) {
-                        String key = it.next();
-                        String value = obj.getString(key);
-                        s = s + key + ":" + value + "\n";
-                    }
-                } catch (JSONException e) {
-                    Log.i(TAG, "error---getString");
-                }
+                List<SkuDetails> objs = Google.GetGoodInfo();
+                for (SkuDetails skuDetail : objs)
+                {
+                    String sku = skuDetail.getSku();
+                    String price = skuDetail.getPrice();
+                    s = s + sku + ":" + price + "\n";
 
-                Log.i(TAG, "setText--------" + s);
+                }
                 text.setText(s);
             }
         });
@@ -126,21 +138,30 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
-                JSONObject obj = Google.GetGoodInfo();
-                Iterator<String> it = obj.keys();
+//                JSONObject obj = Google.GetGoodInfo();
+//                Iterator<String> it = obj.keys();
+//                String s = "";
+//                try {
+//                    while (it.hasNext()) {
+//// 获得key
+//                        String key = it.next();
+//                        String value = obj.getString(key);
+//                        s = s + key + ":" + value + "\n";
+//                    }
+//                } catch (JSONException e) {
+//                    Log.i(TAG, "error---getString");
+//                }
+//
+//                Log.i(TAG, "setText--------" + s);
                 String s = "";
-                try {
-                    while (it.hasNext()) {
-// 获得key
-                        String key = it.next();
-                        String value = obj.getString(key);
-                        s = s + key + ":" + value + "\n";
-                    }
-                } catch (JSONException e) {
-                    Log.i(TAG, "error---getString");
-                }
+                List<SkuDetails> objs = Google.GetGoodInfo();
+                for (SkuDetails skuDetail : objs)
+                {
+                    String sku = skuDetail.getSku();
+                    String price = skuDetail.getPrice();
+                    s = s + sku + ":" + price + "\n";
 
-                Log.i(TAG, "setText--------" + s);
+                }
                 text.setText(s);
             }
         });

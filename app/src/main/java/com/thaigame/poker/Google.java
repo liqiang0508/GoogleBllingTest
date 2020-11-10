@@ -1,5 +1,6 @@
 package com.thaigame.poker;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import androidx.annotation.Nullable;
 import android.util.Log;
@@ -117,14 +118,17 @@ public class Google {
 
     // 查询回调
     static SkuDetailsResponseListener skuDetailsResponseListener = new SkuDetailsResponseListener() {
+        @SuppressLint("LongLogTag")
         @Override
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
             Log.e(TAG, "onSkuDetailsResponse");
             for (SkuDetails skuDetails : skuDetailsList) {
                 String sku = skuDetails.getSku();
                 String price = skuDetails.getPrice();
+                String price_currency_code = skuDetails.getPriceCurrencyCode();
                 Log.e("Google sku", sku);
                 Log.e("Google price", price);
+                Log.e("Google price_currency_code", price_currency_code);
                 skuDetailList.add(skuDetails);
             }
             f_call.onQuerySkuDetailsDone();
@@ -145,20 +149,9 @@ public class Google {
     };
 
     //获取商品信息
-    static JSONObject GetGoodInfo() {
-        JSONObject jsonObject = new JSONObject();
-        for (SkuDetails skuDetail : skuDetailList) {
-            String sku = skuDetail.getSku();
-            String price = skuDetail.getPrice();
-            try {
-                jsonObject.put(sku, price);
-            } catch (JSONException e) {
-                Log.e(TAG, "GetGoodInfo  error");
-            }
+    static List<SkuDetails> GetGoodInfo() {
 
-
-        }
-        return jsonObject;
+        return skuDetailList;
 
     }
 
