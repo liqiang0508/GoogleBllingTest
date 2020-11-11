@@ -2,6 +2,8 @@ package com.thaigame.poker;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
@@ -12,6 +14,8 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchaseHistoryRecord;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
@@ -91,29 +95,39 @@ public class Google {
         return b;
     }
 
-    //获取上次支付的json 数据
+    //获取上次支付的json数据
     static String GetLastOriginalJson() {
         return payOriginalJson;
     }
 
-    // 签名数据
+    //获取上次支付的签名数据
     static String GetLastSignature() {
         return paygetSignature;
     }
 
+    //查询的时候发现有未消耗的商品
+    static void handlePurchase(PurchaseHistoryRecord purchase) {
+        Log.i(TAG, "消耗="+purchase.toString());
+        handlePurchase(purchase.getPurchaseToken());
+    }
     //消耗商品
     static void handlePurchase(Purchase purchase) {
-//        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+            Log.i(TAG, "消耗="+purchase.toString());
             payOriginalJson = purchase.getOriginalJson();
             paygetSignature = purchase.getSignature();
-            Log.e(TAG, "handlePurchase:-- " + payOriginalJson + "\n" + paygetSignature + "\n");
-            ConsumeParams consumeParams = ConsumeParams.newBuilder()
-                    .setPurchaseToken(purchase.getPurchaseToken())
-//                    .setDeveloperPayload(purchase.getDeveloperPayload())//弃用
-                    .build();
 
-            mBillingClient.consumeAsync(consumeParams, consumeResponseListener);
-//        }
+            handlePurchase(purchase.getPurchaseToken());
+
+    }
+
+
+    static void handlePurchase(String purchaseToken) {
+        ConsumeParams consumeParams = ConsumeParams.newBuilder()
+                .setPurchaseToken(purchaseToken)
+//                    .setDeveloperPayload(purchase.getDeveloperPayload())//弃用
+                .build();
+
+        mBillingClient.consumeAsync(consumeParams, consumeResponseListener);
     }
 
     // 查询回调
@@ -191,12 +205,13 @@ public class Google {
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     Log.e(TAG, "onBillingSetupFinished  OK");
+                    checkNoConsumed();//检测未消耗的商品
+
                     List<String> skuList = new ArrayList<>();
                     for (int i = 1;i<=IapCount;i++)
                     {
                         skuList.add(SKU_PREFIX+i);
                     }
-
                     SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
                     params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
                     mBillingClient.querySkuDetailsAsync(params.build(), skuDetailsResponseListener);
@@ -217,6 +232,36 @@ public class Google {
                 PlayServiceState = false;
 //                InitSDk(MainActivity.activity);//断开连接在连一次
                 f_call.onBillingServiceDisconnected();
+            }
+        });
+    }
+
+    //检查未消耗的商品
+    static void checkNoConsumed(){
+
+            Purchase.PurchasesResult purchasesResult =  mBillingClient.queryPurchases(BillingClient.SkuType.INAPP);
+            if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK)
+            {
+                List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
+                for(Purchase purchase:purchaseList){
+                    handlePurchase(purchase);
+                }
+            }
+    }
+
+    //获取历史订单
+    static void getHistoreyPurchase(){
+
+        mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
+            @Override
+            public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
+                if(billingResult.getResponseCode() ==BillingClient.BillingResponseCode.OK )
+                {
+                    for (PurchaseHistoryRecord record:list)
+                    {
+                        handlePurchase(record);
+                    }
+                }
             }
         });
     }
