@@ -90,7 +90,7 @@ public class Google {
 
     //客户端验证是否是ok的 一般都是发给服务器验证
     static boolean verifyPurchase(String signedData, String signature) {
-        Boolean b = Security.verifyPurchase(base64PublicKey, payOriginalJson.toString(), paygetSignature);
+        Boolean b = Security.verifyPurchase(base64PublicKey, signedData, signature);
         Log.e("b==", b + "");
         return b;
     }

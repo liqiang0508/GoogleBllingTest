@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "29.0.0"
+    compileSdkVersion 30
+    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.thaigame.poker"
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 16000
         versionName "1.6.0"
         multiDexEnabled true
@@ -25,7 +25,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.android.gms:play-services:12.0.1'
-    implementation 'com.android.billingclient:billing:3.0.1'
+    implementation 'com.android.billingclient:billing:3.0.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

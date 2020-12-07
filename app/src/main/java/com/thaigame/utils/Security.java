@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-package com.texascasino.utils;
+package com.thaigame.utils;
 
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.thaigame.utils.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
