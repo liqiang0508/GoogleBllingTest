@@ -3,8 +3,11 @@ package com.thaigame.poker;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +17,8 @@ import android.widget.TextView;
 //import static com.android.billingclient.api.BillingClient.BillingResponse;
 
 import com.android.billingclient.api.SkuDetails;
+import com.game.utils.DownLoadUtils;
+import com.game.utils.IDownloadlister;
 import com.thaigame.poker.R;
 
 import org.json.JSONException;
@@ -36,7 +41,6 @@ public class MainActivity extends Activity {
         activity = this;
 
 
-
         Google.setGoogleState(new Google.GoogleState() {
 
             @Override
@@ -51,7 +55,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onBillingSetupError(int code) {
-                Log.e(TAG, "onBillingSetupError---"+code);
+                Log.e(TAG, "onBillingSetupError---" + code);
             }
 
             @Override
@@ -75,8 +79,7 @@ public class MainActivity extends Activity {
 //                Log.i(TAG, "setText--------" + s);
                 String s = "";
                 List<SkuDetails> objs = Google.GetGoodInfo();
-                for (SkuDetails skuDetail : objs)
-                {
+                for (SkuDetails skuDetail : objs) {
                     String sku = skuDetail.getSku();
                     String price = skuDetail.getPrice();
                     s = s + sku + ":" + price + "\n";
@@ -138,25 +141,10 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
-//                JSONObject obj = Google.GetGoodInfo();
-//                Iterator<String> it = obj.keys();
-//                String s = "";
-//                try {
-//                    while (it.hasNext()) {
-//// 获得key
-//                        String key = it.next();
-//                        String value = obj.getString(key);
-//                        s = s + key + ":" + value + "\n";
-//                    }
-//                } catch (JSONException e) {
-//                    Log.i(TAG, "error---getString");
-//                }
-//
-//                Log.i(TAG, "setText--------" + s);
+
                 String s = "";
                 List<SkuDetails> objs = Google.GetGoodInfo();
-                for (SkuDetails skuDetail : objs)
-                {
+                for (SkuDetails skuDetail : objs) {
                     String sku = skuDetail.getSku();
                     String price = skuDetail.getPrice();
                     s = s + sku + ":" + price + "\n";
@@ -170,10 +158,22 @@ public class MainActivity extends Activity {
         tosecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick:tosecond ");
-                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+//                Log.i(TAG, "onClick:tosecond ");
+//                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+                DownLoadUtils.builder()
+                        .setContext(activity)
+                        .setFileName("666.apk")
+                        .setLister(new IDownloadlister() {
+                            @Override
+                            public void success(Uri uri) {
+                                Log.i(TAG,uri.toString());
+                                DownLoadUtils.builder().installAPK();
+
+                            }
+                        })
+                        .download();
             }
         });
 
