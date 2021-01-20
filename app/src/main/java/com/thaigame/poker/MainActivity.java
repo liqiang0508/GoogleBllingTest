@@ -167,11 +167,31 @@ public class MainActivity extends Activity {
                         .setFileName("666.apk")
                         .setLister(new IDownloadlister() {
                             @Override
-                            public void success(Uri uri) {
-                                Log.i(TAG,uri.toString());
-                                DownLoadUtils.builder().installAPK();
-
+                            public void onDownloadStart() {
+                                    Log.i(TAG,"onDownloadStart");
                             }
+
+                            @Override
+                            public void onDownloadPause() {
+                                Log.i(TAG,"onDownloadPause");
+                            }
+
+                            @Override
+                            public void onDownloadRunning(int current) {
+                                Log.i(TAG,"onDownloadRunning==="+current);
+                            }
+
+                            @Override
+                            public void onSuccess(String filePath) {
+                                DownLoadUtils.builder().installAPK(filePath);
+                            }
+
+                            @Override
+                            public void onFailed() {
+                                Log.i(TAG,"onFailed");
+                            }
+
+
                         })
                         .download();
             }
