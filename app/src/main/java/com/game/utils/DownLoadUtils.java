@@ -187,7 +187,7 @@ public  class DownLoadUtils {
         return this;
     }
     //安装apk
-    public DownLoadUtils installAPK( String filepath) {
+    public void installAPK( String filepath) {
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         // 由于没有在Activity环境下启动Activity,设置下面的标签
@@ -209,7 +209,7 @@ public  class DownLoadUtils {
             );
         }
         context.startActivity(intent);
-        return this;
+
     }
 
 }
