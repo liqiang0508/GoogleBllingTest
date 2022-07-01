@@ -15,10 +15,16 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
@@ -51,7 +57,7 @@ public class Google {
     static String base64PublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAowzbGJf2Y9Q32fO/TgNvbC9SRmfYMunEirkUGpifg5NpfxkCURYS9emYaDlvcb22JiRZZPs+8so1apnE4f3kDGNNts9szJGA7amatvD+gW7/MSaTsieK9eBV53Xn32sSdG+fxgZKJhTuSf8GqWi06IMQurmO24RKkBROZwJfrMarZ8vZCyKX7LJJR7nhyDMvvQsFWszTn+g5FTLxXHu0eNw8OWABRaHZy+ICdDxu74MxA1jrGisqLAeAP2iKD0jsQUdATBlE9O/yCyHvAx/mvSe5VbTqDZ0z9GpFDejUYM2w3tbZy6Pkq+ocAoky842q4OORGTL9+hw6zSIRRlXdzQIDAQAB";
 
     static private String TAG = "Google";
-    static List<SkuDetails> skuDetailList = new ArrayList<SkuDetails>();//商品信息
+    static List<ProductDetails> skuDetailList = new ArrayList<ProductDetails>();//商品信息
 
     static private BillingClient mBillingClient;
     static boolean PlayServiceState = false;
@@ -69,7 +75,7 @@ public class Google {
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "支付成功=" + billingResult.getResponseCode() + "---" + purchase.getSku());
+                    Log.e(TAG, "支付成功=" + billingResult.getResponseCode() + "---" + purchase.getSkus());
                     handlePurchase(purchase);
 
                 }
@@ -80,7 +86,7 @@ public class Google {
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "已经拥有了这个商品=" + billingResult.getResponseCode() + "---" + purchase.getSku());
+                    Log.e(TAG, "已经拥有了这个商品=" + billingResult.getResponseCode() + "---" + purchase.getSkus());
                     handlePurchase(purchase);
                 }
             } else//fail
@@ -134,21 +140,28 @@ public class Google {
     }
 
     // 查询回调
-    static SkuDetailsResponseListener skuDetailsResponseListener = new SkuDetailsResponseListener() {
+    static ProductDetailsResponseListener skuDetailsResponseListener = new ProductDetailsResponseListener() {
         @SuppressLint("LongLogTag")
         @Override
-        public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
-            Log.e(TAG, "onSkuDetailsResponse");
-            for (SkuDetails skuDetails : skuDetailsList) {
-                String sku = skuDetails.getSku();
-                String price = skuDetails.getPrice();
-                String price_currency_code = skuDetails.getPriceCurrencyCode();
-                Log.e("Google sku", sku);
-                Log.e("Google price", price);
-                Log.e("Google price_currency_code", price_currency_code);
-                skuDetailList.add(skuDetails);
+        public void onProductDetailsResponse(@NonNull BillingResult billingResult, @NonNull List<ProductDetails> list) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                Log.e(TAG, "onSkuDetailsResponse  success");
+                for (ProductDetails skuDetails : list) {
+                    String sku = skuDetails.getProductId();
+                    String price = skuDetails.getOneTimePurchaseOfferDetails().getFormattedPrice();
+                    String price_currency_code = skuDetails.getOneTimePurchaseOfferDetails().getPriceCurrencyCode();
+                    Log.e("Google sku", sku);
+                    Log.e("Google price", price);
+                    Log.e("Google price_currency_code", price_currency_code);
+                    skuDetailList.add(skuDetails);
+                }
+                f_call.onQuerySkuDetailsDone();
             }
-            f_call.onQuerySkuDetailsDone();
+            else
+            {
+                Log.e(TAG, "onSkuDetailsResponse failed");
+            }
+
         }
     };
 
@@ -166,7 +179,7 @@ public class Google {
     };
 
     //获取商品信息
-    static List<SkuDetails> GetGoodInfo() {
+    static List<ProductDetails> GetGoodInfo() {
         return skuDetailList;
     }
 
@@ -176,9 +189,9 @@ public class Google {
             Log.e(TAG, "onBillingServiceDisconnected  can not Pay==" + productId);
             return;
         }
-        SkuDetails skuDetails = null;
-        for (SkuDetails skuDetail : skuDetailList) {
-            String sku = skuDetail.getSku();
+        ProductDetails skuDetails = null;
+        for (ProductDetails skuDetail : skuDetailList) {
+            String sku = skuDetail.getProductId();
             if (productId.toString().equals(sku.toString())) {
                 skuDetails = skuDetail;
 
@@ -189,8 +202,14 @@ public class Google {
             return;
         }
         Log.e(TAG, "Pay===" + productId);
+        List<BillingFlowParams.ProductDetailsParams> listProduct = new ArrayList<BillingFlowParams.ProductDetailsParams>();
+        BillingFlowParams.ProductDetailsParams _productDetails = BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(skuDetails)
+                .setOfferToken(String.valueOf(skuDetails.getSubscriptionOfferDetails()))
+                .build();
+        listProduct.add(_productDetails);
         BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
+                .setProductDetailsParamsList(listProduct)
                 .build();
         BillingResult responseCode = mBillingClient.launchBillingFlow(MainActivity.activity, flowParams);
 
@@ -208,20 +227,26 @@ public class Google {
                     Log.e(TAG, "onBillingSetupFinished  OK");
                     checkNoConsumed();//检测未消耗的商品
 
-                    List<String> skuList = new ArrayList<>();
+                    List<QueryProductDetailsParams.Product> listProduct = new ArrayList<QueryProductDetailsParams.Product>();
                     try {
                         JSONArray contentArray = new JSONArray(goods);
                         for (int i = 0; i < contentArray.length(); i++) {
-                            Log.e(TAG, "contentArray1---" + contentArray.get(i));
-                            skuList.add((String) contentArray.get(i));
+                            String productId = (String) contentArray.get(i);
+                            QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
+                                    .setProductId(productId)
+                                    .setProductType(BillingClient.ProductType.INAPP)
+                                    .build();
+                            listProduct.add(product);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-                    params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
-                    mBillingClient.querySkuDetailsAsync(params.build(), skuDetailsResponseListener);
+                    QueryProductDetailsParams queryProductDetailsParams =
+                            QueryProductDetailsParams.newBuilder()
+                                    .setProductList(listProduct)
+                                    .build();
+                    mBillingClient.queryProductDetailsAsync(queryProductDetailsParams, skuDetailsResponseListener);
                     PlayServiceState = true;
                     f_call.onBillingSetupFinished();
                 } else {
@@ -242,31 +267,40 @@ public class Google {
             }
         });
     }
-
+    static PurchasesResponseListener purchaseResponseListener = new PurchasesResponseListener(){
+        @Override
+        public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                for (Purchase purchase : list) {
+                    handlePurchase(purchase);
+                }}
+        }
+    };
     //检查未消耗的商品
     static void checkNoConsumed() {
-
-        Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(BillingClient.SkuType.INAPP);
-        if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-            List<Purchase> purchaseList = purchasesResult.getPurchasesList();
-            for (Purchase purchase : purchaseList) {
-                handlePurchase(purchase);
-            }
-        }
+        mBillingClient.queryPurchasesAsync(
+                QueryPurchasesParams.newBuilder()
+                        .setProductType(BillingClient.ProductType.INAPP)
+                        .build(),
+                purchaseResponseListener
+        );
     }
+
+    static PurchaseHistoryResponseListener purchaseHistoryResponseListener = new PurchaseHistoryResponseListener() {
+        @Override
+        public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
+
+        }
+    };
 
     //获取历史订单
     static void getHistoreyPurchase() {
-        mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
-            @Override
-            public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    for (PurchaseHistoryRecord record : list) {
-                        handlePurchase(record);
-                    }
-                }
-            }
-        });
+        mBillingClient.queryPurchaseHistoryAsync(
+                QueryPurchaseHistoryParams.newBuilder()
+                        .setProductType(BillingClient.ProductType.INAPP)
+                        .build(),
+                purchaseHistoryResponseListener
+        );
     }
 
 }

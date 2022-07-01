@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.ProductDetails;
 import com.game.utils.DownLoadUtils;
 import com.game.utils.IDownloadlister;
 
@@ -32,23 +32,26 @@ public class MainActivity extends Activity {
             public void onBillingServiceDisconnected() {
                 Log.e(TAG, "onBillingServiceDisconnected---");
             }
+
             @Override
             public void onBillingSetupFinished() {
                 Log.e(TAG, "onBillingSetupFinished---");
             }
+
             @Override
             public void onBillingSetupError(int code) {
                 Log.e(TAG, "onBillingSetupError---" + code);
             }
+
             @Override
             public void onQuerySkuDetailsDone() {
                 Log.e(TAG, "onQuerySkuDetailsDone---");
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
                 String s = "";
-                List<SkuDetails> objs = Google.GetGoodInfo();
-                for (SkuDetails skuDetail : objs) {
-                    String sku = skuDetail.getSku();
-                    String price = skuDetail.getPrice();
+                List<ProductDetails> objs = Google.GetGoodInfo();
+                for (ProductDetails skuDetail : objs) {
+                    String sku = skuDetail.getProductId();
+                    String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
 
                 }
@@ -108,17 +111,17 @@ public class MainActivity extends Activity {
         });
 
         Button getInfo = (Button) findViewById(R.id.getInfo);
-        getInfo.setVisibility(View.INVISIBLE);
+//        getInfo.setVisibility(View.INVISIBLE);
         getInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
 
                 String s = "";
-                List<SkuDetails> objs = Google.GetGoodInfo();
-                for (SkuDetails skuDetail : objs) {
-                    String sku = skuDetail.getSku();
-                    String price = skuDetail.getPrice();
+                List<ProductDetails> objs = Google.GetGoodInfo();
+                for (ProductDetails skuDetail : objs) {
+                    String sku = skuDetail.getProductId();
+                    String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
 
                 }
