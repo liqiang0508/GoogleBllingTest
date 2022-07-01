@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -25,9 +26,6 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.thaigame.utils.Security;
 
 import org.json.JSONArray;
@@ -47,8 +45,6 @@ public class Google {
         void onBillingSetupError(int code);
 
         void onQuerySkuDetailsDone();
-
-
     }
 
     static GoogleState f_call;
@@ -75,8 +71,10 @@ public class Google {
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "支付成功=" + billingResult.getResponseCode() + "---" + purchase.getSkus());
-                    handlePurchase(purchase);
+                    Log.e(TAG, "支付成功=" + purchase.getOriginalJson());
+                    if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                        handlePurchase(purchase);
+                    }
 
                 }
             } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED)//user canceled
@@ -86,7 +84,7 @@ public class Google {
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "已经拥有了这个商品=" + billingResult.getResponseCode() + "---" + purchase.getSkus());
+                    Log.e(TAG, "已经拥有了这个商品=" + purchase.getOriginalJson());
                     handlePurchase(purchase);
                 }
             } else//fail
@@ -114,30 +112,21 @@ public class Google {
         return paygetSignature;
     }
 
-    //查询的时候发现有未消耗的商品
-    static void handlePurchase(PurchaseHistoryRecord purchase) {
-        Log.i(TAG, "消耗=" + purchase.toString());
-        handlePurchase(purchase.getPurchaseToken());
-    }
 
     //消耗商品
     static void handlePurchase(Purchase purchase) {
         Log.i(TAG, "消耗=" + purchase.toString());
         payOriginalJson = purchase.getOriginalJson();
         paygetSignature = purchase.getSignature();
-        handlePurchase(purchase.getPurchaseToken());
-
-    }
-
-
-    static void handlePurchase(String purchaseToken) {
+        AccountIdentifiers accountIdentifiers = purchase.getAccountIdentifiers();
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
-                .setPurchaseToken(purchaseToken)
-//                    .setDeveloperPayload(purchase.getDeveloperPayload())//弃用
+                .setPurchaseToken(purchase.getPurchaseToken())
                 .build();
 
         mBillingClient.consumeAsync(consumeParams, consumeResponseListener);
+
     }
+
 
     // 查询回调
     static ProductDetailsResponseListener skuDetailsResponseListener = new ProductDetailsResponseListener() {
@@ -156,9 +145,7 @@ public class Google {
                     skuDetailList.add(skuDetails);
                 }
                 f_call.onQuerySkuDetailsDone();
-            }
-            else
-            {
+            } else {
                 Log.e(TAG, "onSkuDetailsResponse failed");
             }
 
@@ -185,6 +172,11 @@ public class Google {
 
     //buy
     static void Pay(String productId) {
+        Pay(productId, "");
+    }
+
+    //buy
+    static void Pay(String productId, String extraData) {
         if (PlayServiceState == false) {//断开了连接
             Log.e(TAG, "onBillingServiceDisconnected  can not Pay==" + productId);
             return;
@@ -210,6 +202,7 @@ public class Google {
         listProduct.add(_productDetails);
         BillingFlowParams flowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(listProduct)
+                .setObfuscatedAccountId(extraData)
                 .build();
         BillingResult responseCode = mBillingClient.launchBillingFlow(MainActivity.activity, flowParams);
 
@@ -267,16 +260,21 @@ public class Google {
             }
         });
     }
-    static PurchasesResponseListener purchaseResponseListener = new PurchasesResponseListener(){
+
+    static PurchasesResponseListener purchaseResponseListener = new PurchasesResponseListener() {
         @Override
         public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                 for (Purchase purchase : list) {
-                    handlePurchase(purchase);
-                }}
+                    if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                        handlePurchase(purchase);
+                    }
+                }
+            }
         }
     };
-    //检查未消耗的商品
+
+    //检查没有消耗的商品
     static void checkNoConsumed() {
         mBillingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder()
@@ -286,9 +284,13 @@ public class Google {
         );
     }
 
+    //历史订单返回
     static PurchaseHistoryResponseListener purchaseHistoryResponseListener = new PurchaseHistoryResponseListener() {
         @Override
         public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
+            for (PurchaseHistoryRecord purchase : list) {
+                String sku = purchase.getOriginalJson();
+            }
 
         }
     };
