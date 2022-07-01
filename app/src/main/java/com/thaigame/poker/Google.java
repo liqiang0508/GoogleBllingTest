@@ -5,7 +5,9 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -22,8 +24,8 @@ import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.thaigame.utils.Security;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,17 +33,19 @@ import java.util.List;
 
 public class Google {
 
-    public  interface GoogleState{
-          void onBillingServiceDisconnected();
-          void onBillingSetupFinished();
-          void onBillingSetupError(int code);
-          void onQuerySkuDetailsDone();
+    public interface GoogleState {
+        void onBillingServiceDisconnected();
+
+        void onBillingSetupFinished();
+
+        void onBillingSetupError(int code);
+
+        void onQuerySkuDetailsDone();
+
 
     }
-    static final String SKU_PREFIX = MainActivity.activity.getPackageName() + ".gempack";
-    static GoogleState f_call;
 
-    static int IapCount = 7;
+    static GoogleState f_call;
     static String payOriginalJson;
     static String paygetSignature;
     static String base64PublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAowzbGJf2Y9Q32fO/TgNvbC9SRmfYMunEirkUGpifg5NpfxkCURYS9emYaDlvcb22JiRZZPs+8so1apnE4f3kDGNNts9szJGA7amatvD+gW7/MSaTsieK9eBV53Xn32sSdG+fxgZKJhTuSf8GqWi06IMQurmO24RKkBROZwJfrMarZ8vZCyKX7LJJR7nhyDMvvQsFWszTn+g5FTLxXHu0eNw8OWABRaHZy+ICdDxu74MxA1jrGisqLAeAP2iKD0jsQUdATBlE9O/yCyHvAx/mvSe5VbTqDZ0z9GpFDejUYM2w3tbZy6Pkq+ocAoky842q4OORGTL9+hw6zSIRRlXdzQIDAQAB";
@@ -52,10 +56,10 @@ public class Google {
     static private BillingClient mBillingClient;
     static boolean PlayServiceState = false;
 
-    static void setGoogleState(GoogleState call)
-    {
+    static void setGoogleState(GoogleState call) {
         f_call = call;
     }
+
     //购买回调
     static PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
         @Override
@@ -65,25 +69,24 @@ public class Google {
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "onPurchasesUpdated--------OK----" + billingResult.getResponseCode() + "---" + purchase.getSku());
+                    Log.e(TAG, "支付成功=" + billingResult.getResponseCode() + "---" + purchase.getSku());
                     handlePurchase(purchase);
 
                 }
-                //Toast.makeText(MainActivity.activity, "buy success", Toast.LENGTH_LONG).show();
             } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED)//user canceled
             {
-                Log.e(TAG, "onPurchasesUpdated--------USER_CANCELED---" + billingResult.getResponseCode());
+                Log.e(TAG, "玩家取消=" + billingResult.getResponseCode());
             } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED)//ITEM_ALREADY_OWNED
             {
 
                 for (Purchase purchase : purchases) {
-                    Log.e(TAG, "onPurchasesUpdated--------ITEM_ALREADY_OWNED----" + billingResult.getResponseCode()+"---"+purchase.getSku());
+                    Log.e(TAG, "已经拥有了这个商品=" + billingResult.getResponseCode() + "---" + purchase.getSku());
                     handlePurchase(purchase);
                 }
             } else//fail
             {
-                Log.e(TAG, "onPurchasesUpdated error-----" + billingResult.getResponseCode());
-//                Toast.makeText(MainActivity.activity, "onPurchasesUpdated fail-" + billingResult.getResponseCode(), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "购买失败" + billingResult.getResponseCode());
+                Toast.makeText(MainActivity.activity, "购买失败=" + billingResult.getResponseCode(), Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -91,7 +94,7 @@ public class Google {
     //客户端验证是否是ok的 一般都是发给服务器验证
     static boolean verifyPurchase(String signedData, String signature) {
         Boolean b = Security.verifyPurchase(base64PublicKey, signedData, signature);
-        Log.e("b==", b + "");
+        Log.e("verifyPurchase", String.valueOf(b));
         return b;
     }
 
@@ -107,16 +110,16 @@ public class Google {
 
     //查询的时候发现有未消耗的商品
     static void handlePurchase(PurchaseHistoryRecord purchase) {
-        Log.i(TAG, "消耗="+purchase.toString());
+        Log.i(TAG, "消耗=" + purchase.toString());
         handlePurchase(purchase.getPurchaseToken());
     }
+
     //消耗商品
     static void handlePurchase(Purchase purchase) {
-            Log.i(TAG, "消耗="+purchase.toString());
-            payOriginalJson = purchase.getOriginalJson();
-            paygetSignature = purchase.getSignature();
-
-            handlePurchase(purchase.getPurchaseToken());
+        Log.i(TAG, "消耗=" + purchase.toString());
+        payOriginalJson = purchase.getOriginalJson();
+        paygetSignature = purchase.getSignature();
+        handlePurchase(purchase.getPurchaseToken());
 
     }
 
@@ -155,18 +158,16 @@ public class Google {
         @Override
         public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                Log.e(TAG, "onConsumeResponse: success--" + purchaseToken);
+                Log.e(TAG, "消耗成功" + purchaseToken);
             } else {
-                Log.e(TAG, "onConsumeResponse: error---" + billingResult.getResponseCode() + "  " + purchaseToken);
+                Log.e(TAG, "消耗失败" + billingResult.getResponseCode() + "  " + purchaseToken);
             }
         }
     };
 
     //获取商品信息
     static List<SkuDetails> GetGoodInfo() {
-
         return skuDetailList;
-
     }
 
     //buy
@@ -195,7 +196,7 @@ public class Google {
 
     }
 
-    static void InitSDk(Activity activity) {
+    static void InitSDk(Activity activity, final String goods) {
         //Create and initialize BillingManager which talks to BillingLibrary
         mBillingClient = BillingClient.newBuilder(activity).setListener(purchasesUpdatedListener).enablePendingPurchases().build();
         mBillingClient.startConnection(new BillingClientStateListener() {
@@ -208,17 +209,23 @@ public class Google {
                     checkNoConsumed();//检测未消耗的商品
 
                     List<String> skuList = new ArrayList<>();
-                    for (int i = 1;i<=IapCount;i++)
-                    {
-                        skuList.add(SKU_PREFIX+i);
+                    try {
+                        JSONArray contentArray = new JSONArray(goods);
+                        for (int i = 0; i < contentArray.length(); i++) {
+                            Log.e(TAG, "contentArray1---" + contentArray.get(i));
+                            skuList.add((String) contentArray.get(i));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+
                     SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
                     params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
                     mBillingClient.querySkuDetailsAsync(params.build(), skuDetailsResponseListener);
                     PlayServiceState = true;
                     f_call.onBillingSetupFinished();
                 } else {
-//                    Log.e(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
+                    Log.e(TAG, "onBillingSetupFinished error====" + billingResult.getResponseCode());
                     f_call.onBillingSetupError(billingResult.getResponseCode());
                 }
 
@@ -237,28 +244,24 @@ public class Google {
     }
 
     //检查未消耗的商品
-    static void checkNoConsumed(){
+    static void checkNoConsumed() {
 
-            Purchase.PurchasesResult purchasesResult =  mBillingClient.queryPurchases(BillingClient.SkuType.INAPP);
-            if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK)
-            {
-                List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
-                for(Purchase purchase:purchaseList){
-                    handlePurchase(purchase);
-                }
+        Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(BillingClient.SkuType.INAPP);
+        if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+            List<Purchase> purchaseList = purchasesResult.getPurchasesList();
+            for (Purchase purchase : purchaseList) {
+                handlePurchase(purchase);
             }
+        }
     }
 
     //获取历史订单
-    static void getHistoreyPurchase(){
-
+    static void getHistoreyPurchase() {
         mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP, new PurchaseHistoryResponseListener() {
             @Override
             public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
-                if(billingResult.getResponseCode() ==BillingClient.BillingResponseCode.OK )
-                {
-                    for (PurchaseHistoryRecord record:list)
-                    {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    for (PurchaseHistoryRecord record : list) {
                         handlePurchase(record);
                     }
                 }
