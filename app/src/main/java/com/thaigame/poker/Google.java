@@ -112,6 +112,9 @@ public class Google {
         return paygetSignature;
     }
 
+    static void callBack(int code,Purchase purchase) {
+
+    }
 
     //消耗商品
     static void handlePurchase(Purchase purchase) {
@@ -208,9 +211,13 @@ public class Google {
 
     }
 
-    static void InitSDk(Activity activity, final String goods) {
+    /**
+     *
+     * @param goods
+     */
+    static void InitSDk(final String goods) {
         //Create and initialize BillingManager which talks to BillingLibrary
-        mBillingClient = BillingClient.newBuilder(activity).setListener(purchasesUpdatedListener).enablePendingPurchases().build();
+        mBillingClient = BillingClient.newBuilder(MainActivity.activity).setListener(purchasesUpdatedListener).enablePendingPurchases().build();
         mBillingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(BillingResult billingResult) {
@@ -274,6 +281,9 @@ public class Google {
         }
     };
 
+    /**
+     *
+     */
     //检查没有消耗的商品
     static void checkNoConsumed() {
         mBillingClient.queryPurchasesAsync(

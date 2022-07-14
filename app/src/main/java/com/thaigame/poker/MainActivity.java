@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.android.billingclient.api.ProductDetails;
 import com.game.utils.DownLoadUtils;
 import com.game.utils.IDownloadlister;
+import com.superz.moga.R;
 
 import org.json.JSONArray;
 
@@ -59,12 +60,12 @@ public class MainActivity extends Activity {
             }
         });
         JSONArray arr = new JSONArray();
-        for (int i = 1; i < 8; i++) {
-            String SKU_PREFIX = MainActivity.activity.getPackageName() + ".gempack" + i;
+        for (int i = 1; i < 7; i++) {
+            String SKU_PREFIX = "moga_test_pay_00" + i;
             arr.put(SKU_PREFIX);
         }
         Log.i(TAG, arr.toString());
-        Google.InitSDk(activity, arr.toString());
+        Google.InitSDk( arr.toString());
         Button bt = (Button) findViewById(R.id.buy1);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
