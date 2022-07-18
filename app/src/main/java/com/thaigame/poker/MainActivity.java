@@ -1,6 +1,7 @@
 package com.thaigame.poker;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.game.utils.IDownloadlister;
 import com.superz.moga.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class MainActivity extends Activity {
 
     public String TAG = "MainActivity";
     public static MainActivity activity;
-
+    private JSONArray ProductList = new JSONArray();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,24 +56,25 @@ public class MainActivity extends Activity {
                     String sku = skuDetail.getProductId();
                     String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
-
                 }
                 text.setText(s);
             }
         });
-        JSONArray arr = new JSONArray();
-        for (int i = 1; i < 7; i++) {
+        for (int i = 1; i <=4; i++) {
             String SKU_PREFIX = "moga_test_pay_00" + i;
-            arr.put(SKU_PREFIX);
+            ProductList.put(SKU_PREFIX);
         }
-        Log.i(TAG, arr.toString());
-        Google.InitSDk( arr.toString());
+        Log.i(TAG, ProductList.toString());
+        Google.InitSDk( ProductList.toString());
         Button bt = (Button) findViewById(R.id.buy1);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.thaigame.poker.gempack1");
+                try {
+                    Google.Pay((String) ProductList.get(1));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -79,8 +82,11 @@ public class MainActivity extends Activity {
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.thaigame.poker.gempack2");
+                try {
+                    Google.Pay((String) ProductList.get(2));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -88,8 +94,11 @@ public class MainActivity extends Activity {
         bt3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.thaigame.poker.gempack3");
+                try {
+                    Google.Pay((String) ProductList.get(3));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -97,8 +106,11 @@ public class MainActivity extends Activity {
         bt4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.thaigame.poker.gempack4");
+                try {
+                    Google.Pay((String) ProductList.get(4));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -107,7 +119,11 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick: 11");
-                Google.Pay("com.thaigame.poker.gempack5");
+                try {
+                    Google.Pay((String) ProductList.get(1));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -117,14 +133,12 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 TextView text = (TextView) findViewById(R.id.GoodsInfos);
-
                 String s = "";
                 List<ProductDetails> objs = Google.GetGoodInfo();
                 for (ProductDetails skuDetail : objs) {
                     String sku = skuDetail.getProductId();
                     String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
-
                 }
                 text.setText(s);
             }
@@ -135,41 +149,41 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.i(TAG, "onClick:tosecond ");
-//                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(intent);
-                DownLoadUtils.builder()
-                        .setContext(activity)
-                        .setFileName("666.apk")
-                        .setLister(new IDownloadlister() {
-                            @Override
-                            public void onDownloadStart() {
-                                Log.i(TAG, "onDownloadStart");
-                            }
-
-                            @Override
-                            public void onDownloadPause() {
-                                Log.i(TAG, "onDownloadPause");
-                            }
-
-                            @Override
-                            public void onDownloadRunning(int current) {
-                                Log.i(TAG, "onDownloadRunning===" + current);
-                            }
-
-                            @Override
-                            public void onSuccess(String filePath) {
-                                DownLoadUtils.builder().installAPK(filePath);
-                            }
-
-                            @Override
-                            public void onFailed() {
-                                Log.i(TAG, "onFailed");
-                            }
-
-
-                        })
-                        .download();
+                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+//                DownLoadUtils.builder()
+//                        .setContext(activity)
+//                        .setFileName("666.apk")
+//                        .setLister(new IDownloadlister() {
+//                            @Override
+//                            public void onDownloadStart() {
+//                                Log.i(TAG, "onDownloadStart");
+//                            }
+//
+//                            @Override
+//                            public void onDownloadPause() {
+//                                Log.i(TAG, "onDownloadPause");
+//                            }
+//
+//                            @Override
+//                            public void onDownloadRunning(int current) {
+//                                Log.i(TAG, "onDownloadRunning===" + current);
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(String filePath) {
+//                                DownLoadUtils.builder().installAPK(filePath);
+//                            }
+//
+//                            @Override
+//                            public void onFailed() {
+//                                Log.i(TAG, "onFailed");
+//                            }
+//
+//
+//                        })
+//                        .download();
             }
         });
 

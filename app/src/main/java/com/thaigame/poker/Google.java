@@ -1,7 +1,6 @@
 package com.thaigame.poker;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
