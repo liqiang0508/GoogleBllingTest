@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
                     String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
                 }
+                Log.e(TAG, "onQuerySkuDetailsDone--1-"+s);
                 text.setText(s);
             }
         });
@@ -71,7 +72,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Google.Pay((String) ProductList.get(1));
+                    Google.Pay((String) ProductList.get(0));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -83,7 +84,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Google.Pay((String) ProductList.get(2));
+                    Google.Pay((String) ProductList.get(1));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -95,7 +96,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Google.Pay((String) ProductList.get(3));
+                    Google.Pay((String) ProductList.get(2));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -107,7 +108,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Google.Pay((String) ProductList.get(4));
+                    Google.Pay((String) ProductList.get(3));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -140,6 +141,7 @@ public class MainActivity extends Activity {
                     String price = skuDetail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     s = s + sku + ":" + price + "\n";
                 }
+                Log.i(TAG, "getInfo " + s);
                 text.setText(s);
             }
         });

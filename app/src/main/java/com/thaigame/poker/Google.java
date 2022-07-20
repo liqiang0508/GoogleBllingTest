@@ -88,7 +88,7 @@ public class Google {
                 }
             } else//fail
             {
-                Log.e(TAG, "购买失败" + billingResult.getResponseCode());
+                Log.e(TAG, "购买失败==" + billingResult.getResponseCode());
                 Toast.makeText(MainActivity.activity, "购买失败=" + billingResult.getResponseCode(), Toast.LENGTH_LONG).show();
             }
         }
@@ -136,7 +136,7 @@ public class Google {
         @Override
         public void onProductDetailsResponse(@NonNull BillingResult billingResult, @NonNull List<ProductDetails> list) {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                Log.e(TAG, "onSkuDetailsResponse  success");
+                Log.e(TAG, "onSkuDetailsResponse  success=="+list.size());
                 for (ProductDetails skuDetails : list) {
                     String sku = skuDetails.getProductId();
                     String price = skuDetails.getOneTimePurchaseOfferDetails().getFormattedPrice();
@@ -177,7 +177,11 @@ public class Google {
         Pay(productId, "");
     }
 
-    //buy
+
+    /**
+     * @param productId
+     * @param extraData
+     */
     static void Pay(String productId, String extraData) {
         if (PlayServiceState == false) {//断开了连接
             Log.e(TAG, "onBillingServiceDisconnected  can not Pay==" + productId);
@@ -231,6 +235,7 @@ public class Google {
                         JSONArray contentArray = new JSONArray(goods);
                         for (int i = 0; i < contentArray.length(); i++) {
                             String productId = (String) contentArray.get(i);
+//                            Log.e(TAG, "productId==" + productId);
                             QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
                                     .setProductId(productId)
                                     .setProductType(BillingClient.ProductType.INAPP)
@@ -240,7 +245,7 @@ public class Google {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+//                    Log.e(TAG, "listProduct " + listProduct);
                     QueryProductDetailsParams queryProductDetailsParams =
                             QueryProductDetailsParams.newBuilder()
                                     .setProductList(listProduct)
