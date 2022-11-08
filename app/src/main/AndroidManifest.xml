@@ -11,7 +11,7 @@
         android:name="com.thaigame.poker.MyApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity android:name="com.thaigame.poker.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

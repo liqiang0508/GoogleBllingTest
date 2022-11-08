@@ -18,7 +18,7 @@ package com.thaigame.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.thaigame.utils.Base64;
+//import com.thaigame.utils.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -81,9 +81,6 @@ public class Security {
         } catch (InvalidKeySpecException e) {
             Log.e(TAG, "Invalid key specification.");
             throw new IllegalArgumentException(e);
-        } catch (Base64DecoderException e) {
-            Log.e(TAG, "Base64 decoding failed.");
-            throw new IllegalArgumentException(e);
         }
     }
 
@@ -113,8 +110,6 @@ public class Security {
             Log.e(TAG, "Invalid key specification.");
         } catch (SignatureException e) {
             Log.e(TAG, "Signature exception.");
-        } catch (Base64DecoderException e) {
-            Log.e(TAG, "Base64 decoding failed.");
         }
         return false;
     }
