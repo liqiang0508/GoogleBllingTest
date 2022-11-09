@@ -13,6 +13,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.core.view.DisplayCutoutCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.android.billingclient.api.ProductDetails;
 //import com.game.utils.DownLoadUtils;
 //import com.game.utils.IDownloadlister;
@@ -45,8 +48,6 @@ public class MainActivity extends Activity {
             lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
         getWindow().setAttributes(lp);
-        float a [] = getSafeArea();
-        Log.e(TAG, "getSafeArea---" + Arrays.toString(a));
         adapterNotchScreen();
         Google.setGoogleState(new Google.GoogleState() {
             @Override
@@ -217,7 +218,6 @@ public class MainActivity extends Activity {
     public static float[] getSafeArea() {
 
         if (android.os.Build.VERSION.SDK_INT >= 28) {
-
             do {
                 Object windowInsectObj = activity.getWindow().getDecorView().getRootWindowInsets();
 
@@ -256,9 +256,9 @@ public class MainActivity extends Activity {
     }
 
     private void adapterNotchScreen() {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             final View decorView = getWindow().getDecorView();
-
             decorView.post(new Runnable() {
                 @Override
                 public void run() {
