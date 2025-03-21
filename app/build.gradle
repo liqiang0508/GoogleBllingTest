@@ -42,8 +42,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.google.android.gms:play-services:12.0.1'
-    implementation 'com.android.billingclient:billing:5.0.0'
+//    implementation 'com.google.android.gms:play-services:12.0.1'
+    implementation 'com.android.billingclient:billing:7.1.1'
 }
 
-apply plugin: 'com.google.gms.google-services'
+

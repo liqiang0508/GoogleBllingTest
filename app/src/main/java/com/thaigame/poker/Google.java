@@ -25,6 +25,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
+import com.thaigame.utils.Base64DecoderException;
 import com.thaigame.utils.Security;
 
 import org.json.JSONArray;
@@ -96,7 +97,7 @@ public class Google {
     };
 
     //客户端验证是否是ok的 一般都是发给服务器验证
-    static boolean verifyPurchase(String signedData, String signature) {
+    static boolean verifyPurchase(String signedData, String signature) throws Base64DecoderException {
         Boolean b = Security.verifyPurchase(base64PublicKey, signedData, signature);
         Log.e("verifyPurchase", String.valueOf(b));
         return b;

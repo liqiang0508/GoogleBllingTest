@@ -53,7 +53,7 @@ public class Security {
      * @param signedData the signed JSON string (signed, not encrypted)
      * @param signature the signature for the data, signed with the private key
      */
-    public static boolean verifyPurchase(String base64PublicKey, String signedData, String signature) {
+    public static boolean verifyPurchase(String base64PublicKey, String signedData, String signature) throws Base64DecoderException {
         if (TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey) ||
                 TextUtils.isEmpty(signature)) {
             Log.e(TAG, "Purchase verification failed: missing data.");
@@ -81,6 +81,8 @@ public class Security {
         } catch (InvalidKeySpecException e) {
             Log.e(TAG, "Invalid key specification.");
             throw new IllegalArgumentException(e);
+        } catch (Base64DecoderException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -93,7 +95,7 @@ public class Security {
      * @param signature server signature
      * @return true if the data and signature match
      */
-    public static boolean verify(PublicKey publicKey, String signedData, String signature) {
+    public static boolean verify(PublicKey publicKey, String signedData, String signature) throws Base64DecoderException {
         Signature sig;
         try {
             sig = Signature.getInstance(SIGNATURE_ALGORITHM);
