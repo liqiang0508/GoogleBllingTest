@@ -15,8 +15,10 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +32,7 @@ public class GoogleBilling {
 
     protected  String TAG = "GoogleBilling";
     //查询的商品详情
-    private Map<String,ProductDetails>productDetailMap = new HashMap<>();
-    //已经购买的商品
-    protected Map<String,Purchase>purchaseMap = new HashMap<>();
+    private Map<String,ProductDetails> productDetailMap = new HashMap<>();
     //BillingClient
     private BillingClient billingClient = null;
 
@@ -44,9 +44,19 @@ public class GoogleBilling {
             billingClient = BillingClient.newBuilder(context)
                     .setListener(listener)
                     .build();
+
         }
     }
 
+
+    /**
+     * getConnectionState()
+     * @return
+     */
+    public int getConnectionState()
+    {
+        return billingClient.getConnectionState();
+    }
     /**
      * 开始连接
      * @param listener
@@ -60,13 +70,41 @@ public class GoogleBilling {
 
     }
 
+    /**
+     * endConnection()
+     */
+    public void endConnection()
+    {
+        billingClient.endConnection();
+    }
+
+    /**
+     * isFeatureSupported()
+     * @param feature
+     * @return
+     */
+    public BillingResult isFeatureSupported(String feature)
+    {
+        return billingClient.isFeatureSupported(feature);
+    }
+
+
+    /**
+     * billingClient 是否已经连接
+     * @return boolean
+     */
+    public boolean isReady()
+    {
+        return billingClient.isReady();
+    }
 
     /**
      * 查询商品
      * @param productIds
+     * @param productTypes
      * @param listener
      */
-    public void queryProductDetail(String[] productIds,ProductDetailsResponseListener listener)
+    public void queryProductDetail(String[] productIds,String[] productTypes,ProductDetailsResponseListener listener)
     {
         if(!isReady())
         {
@@ -79,13 +117,20 @@ public class GoogleBilling {
             Log.e(TAG, "Product id must be provided.");
             return;
         }
+
         List<QueryProductDetailsParams.Product> productList = new ArrayList<QueryProductDetailsParams.Product>();
-        for (String productId : productIds) {
+        for(int i = 0;i<productIds.length;i++)
+        {
+            String productId = productIds[i];
+            String productType = productTypes[i]!=null&& !productTypes[i].isEmpty()?productTypes[i]:BillingClient.ProductType.INAPP;
             QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
                     .setProductId(productId)
-                    .setProductType(BillingClient.ProductType.INAPP)
+                    .setProductType(productType)
                     .build();
+
+            productList.add(product);
         }
+
         QueryProductDetailsParams queryProductDetailsParams =
                 QueryProductDetailsParams.newBuilder()
                         .setProductList(productList)
@@ -106,14 +151,6 @@ public class GoogleBilling {
         });
     }
 
-    /**
-     * billingClient 是否已经连接
-     * @return
-     */
-    public boolean isReady()
-    {
-        return billingClient.isReady();
-    }
 
     /**
      * 开始购买
@@ -162,24 +199,40 @@ public class GoogleBilling {
                         .setPurchaseToken(purchase.getPurchaseToken())
                         .build();
 
-        billingClient.consumeAsync(consumeParams, new ConsumeResponseListener() {
-            @Override
-            public void onConsumeResponse(@NonNull BillingResult billingResult, @NonNull String purchaseToken) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    Log.e(TAG, "consumeProduct success:" + purchaseToken);
-                    //移除
-                    List<String> products = purchase.getProducts();
-                    for(String product:products)
-                    {
-                        purchaseMap.remove(product);
-                    }
+        billingClient.consumeAsync(consumeParams, listener);
 
-                } else {
-                    Log.e(TAG, "consumeProduct failed:" + billingResult.getResponseCode() + "  " + purchaseToken);
-                }
-                listener.onConsumeResponse(billingResult,purchaseToken);
-            }
-        });
     }
+
+    /**
+     * 查询已经购买
+     * @param listener
+     */
+    public void queryPurchase(PurchasesResponseListener listener)
+    {
+        billingClient.queryPurchasesAsync(
+                QueryPurchasesParams.newBuilder()
+                        .setProductType(BillingClient.ProductType.INAPP)
+                        .build(),
+                listener
+//                new PurchasesResponseListener() {
+//                    @Override
+//                    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
+//                        if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK )
+//                        {
+//                            for(Purchase purchase:list)
+//                            {
+//                                if(purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED )
+//                                {
+//                                    purchaseMap.put(purchase.getOrderId(),purchase);
+//                                }
+//                            }
+//                        }
+//
+//                        listener.onQueryPurchasesResponse(billingResult, list);
+//                    }
+//                }
+        );
+    }
+
 
 }
