@@ -205,13 +205,14 @@ public class GoogleBilling {
 
     /**
      * 查询已经购买
+     * @param type BillingClient.ProductType.INAPP or BillingClient.ProductType.SUBS
      * @param listener
      */
-    public void queryPurchase(PurchasesResponseListener listener)
+    public void queryPurchase(String type,PurchasesResponseListener listener)
     {
         billingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder()
-                        .setProductType(BillingClient.ProductType.INAPP)
+                        .setProductType(type)
                         .build(),
                 listener
 //                new PurchasesResponseListener() {
