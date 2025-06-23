@@ -17,6 +17,7 @@ import com.android.billingclient.api.ProductDetails;
 //import com.game.utils.DownLoadUtils;
 //import com.game.utils.IDownloadlister;
 import com.config.Config;
+import com.superz.moga.BuildConfig;
 import com.superz.moga.R;
 
 import org.json.JSONArray;
@@ -208,7 +209,7 @@ public class MainActivity extends Activity {
         TextView tx = findViewById(R.id.textView2);
         if(tx!=null)
         {
-            String name = Config.chanelName;
+            String name = BuildConfig.CHANNEL;//Config.chanelName;
             tx.setText(name);
         }
 
