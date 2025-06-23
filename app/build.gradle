@@ -48,7 +48,7 @@ android {
             versionCode 120                    //版本code
             ext.APP_NAME = "localTest"          //app名称
             resValue "string", "app_name", ext.APP_NAME
-            buildConfigField("String", "CHANNEL", "\"localTest\"")
+            buildConfigField("String", "CHANNEL", "localTest")
 
         }
         chanelA {
@@ -59,7 +59,7 @@ android {
             versionCode 120                    //版本code
             ext.APP_NAME = "chanelA"          //app名称
             resValue "string", "app_name", ext.APP_NAME
-            buildConfigField("String", "CHANNEL", "\"chanelA\"")
+            buildConfigField("String", "CHANNEL", "chanelA")
 
         }
     }
