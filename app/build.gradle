@@ -62,14 +62,6 @@ android {
         }
     }
 
-    sourceSets {
-        chanelA {
-            java.srcDirs = ["src/chanelA/java"]
-        }
-        localTest{
-            java.srcDirs = ["src/localTest/java"]
-        }
-    }
 
 }
 
