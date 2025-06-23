@@ -18,7 +18,7 @@ android {
     compileSdkVersion 31
     defaultConfig {
         applicationId 'com.superz.moga'
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
@@ -35,6 +35,42 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    //变种
+    flavorDimensions "flavor"
+    productFlavors {
+        //渠道名称
+        localTest {
+            dimension "flavor"
+            applicationId "com.game.localTest"  //包名
+            versionName "1.2.0"
+            //版本号 (修改后需要 在remoteConfig.json supportBinarys新增对应版本)
+            versionCode 120                    //版本code
+            ext.APP_NAME = "localTest"          //app名称
+            resValue "string", "app_name", ext.APP_NAME
+
+        }
+        chanelA {
+            dimension "flavor"
+            applicationId "com.game.chanelA"  //包名
+            versionName "1.2.0"
+            //版本号 (修改后需要 在remoteConfig.json supportBinarys新增对应版本)
+            versionCode 120                    //版本code
+            ext.APP_NAME = "chanelA"          //app名称
+            resValue "string", "app_name", ext.APP_NAME
+
+        }
+    }
+
+    sourceSets {
+        chanelA {
+            java.srcDirs = ["src/chanelA/java"]
+        }
+        localTest{
+            java.srcDirs = ["src/localTest/java"]
+        }
+    }
+
 }
 
 dependencies {

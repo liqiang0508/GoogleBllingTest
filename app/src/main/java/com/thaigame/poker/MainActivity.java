@@ -13,21 +13,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.core.view.DisplayCutoutCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.android.billingclient.api.ProductDetails;
 //import com.game.utils.DownLoadUtils;
 //import com.game.utils.IDownloadlister;
+import com.config.Config;
 import com.superz.moga.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -207,6 +203,14 @@ public class MainActivity extends Activity {
 //                        .download();
             }
         });
+
+        //
+        TextView tx = findViewById(R.id.textView2);
+        if(tx!=null)
+        {
+            String name = Config.chanelName;
+            tx.setText(name);
+        }
 
     }
 
